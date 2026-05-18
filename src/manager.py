@@ -9,6 +9,8 @@ class Manager:
         self.tenants = {}
         self.transfers = []
         self.bills = []
+        self.min_amount = 0.0
+        self.max_amount = 999999.0
        
         self.load_data()
 
@@ -25,10 +27,7 @@ class Manager:
         return True
     
     def get_apartment(self, apartment_key: str) -> Apartment | None:
-        for apartment in self.apartments.values():
-            if apartment.key == apartment_key:
-                return apartment
-        return None
+        return self.apartments.get(apartment_key)
 
     def get_apartment_costs(self, apartment_key: str, year: int = None, month: int = None) -> float | None:
         if month is not None and (month < 1 or month > 12):
@@ -115,3 +114,11 @@ class Manager:
         if apartment_key not in self.apartments:
             raise ValueError("Apartment key does not exist")
         return any([bill for bill in self.bills if bill.apartment == apartment_key and bill.settlement_year == year and bill.settlement_month == month])
+    def set_transfer_limits(self, min_amount: float, max_amount: float):
+        self.min_amount = min_amount
+        self.max_amount = max_amount
+
+    def validate_transfer_amount(self, amount: float) -> bool:
+        if amount<self.min_amount or amount > self.max_amount:
+            raise ValueError("Kwota przelewu poza dozwolonym zakresem")
+        return True
