@@ -87,13 +87,21 @@ def test_apartment_has_any_bills():
     has_bills = manager.has_any_bills('apart-polanka', 2025, 3)
     assert has_bills == False
 
+def test_tenant_not_on_blacklist():
+    manager = Manager(Parameters())
+    manager.add_to_blacklist(first_name="Jan", last_name="Kowalski", reason="Brak zaplaty")
+    assert manager.is_tenant_blacklisted(first_name="Anna", last_name="Nowak") is False
+
+def test_tenant_is_blacklisted():
+    manager = Manager(Parameters())
+    manager.add_to_blacklist(first_name="Jan", last_name="Kowalski", reason="Brak zaplaty")
+    assert manager.is_tenant_blacklisted(first_name="Jan", last_name="Kowalski") is True
 def test_transfer_amount_validation_low():
     manager = Manager(Parameters())
     manager.set_transfer_limits(min_amount=10.0, max_amount=10000.0)
 
     with pytest.raises(ValueError, match="Kwota przelewu poza dozwolonym zakresem"):
-    
-manager.validate_transfer_amount(5.0)
+      manager.validate_transfer_amount(5.0)
 
 def test_transfer_amount_validation_high():
     manager = Manager(Parameters())
@@ -106,4 +114,4 @@ def test_tranfer_amount_correct():
     manager = Manager(Parameters())
     manager.set_transfer_limits(min_amount=10.0, max_amount=10000.0)
 
-    asser manager.validate_transfer_amount(500.0) is True
+    assert manager.validate_transfer_amount(500.0) is True
