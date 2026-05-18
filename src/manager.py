@@ -9,6 +9,8 @@ class Manager:
         self.tenants = {}
         self.transfers = []
         self.bills = []
+        self.min_amount = 0.0
+        self.max_amount = 999999.0
         self.blacklist = {}
        
         self.load_data()
@@ -113,6 +115,14 @@ class Manager:
         if apartment_key not in self.apartments:
             raise ValueError("Apartment key does not exist")
         return any([bill for bill in self.bills if bill.apartment == apartment_key and bill.settlement_year == year and bill.settlement_month == month])
+    def set_transfer_limits(self, min_amount: float, max_amount: float):
+        self.min_amount = min_amount
+        self.max_amount = max_amount
+
+    def validate_transfer_amount(self, amount: float) -> bool:
+        if amount<self.min_amount or amount > self.max_amount:
+            raise ValueError("Kwota przelewu poza dozwolonym zakresem")
+        return True
     
     def add_to_blacklist(self, first_name: str, last_name: str, reason: str):
         key = f"{first_name}_{last_name}"
