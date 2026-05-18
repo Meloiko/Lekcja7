@@ -11,6 +11,7 @@ class Manager:
         self.bills = []
         self.min_amount = 0.0
         self.max_amount = 999999.0
+        self.blacklist = {}
        
         self.load_data()
 
@@ -122,3 +123,11 @@ class Manager:
         if amount<self.min_amount or amount > self.max_amount:
             raise ValueError("Kwota przelewu poza dozwolonym zakresem")
         return True
+    
+    def add_to_blacklist(self, first_name: str, last_name: str, reason: str):
+        key = f"{first_name}_{last_name}"
+        self.blacklist[key] = reason
+
+    def is_tenant_blacklisted(self, first_name: str, last_name: str) -> bool:
+        key = f"{first_name}_{last_name}"
+        return key in self.blacklist
