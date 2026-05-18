@@ -1,3 +1,4 @@
+import pytest
 from src.models import Bill, Parameters, TenantSettlement, ApartmentSettlement, Transfer
 from src.manager import Manager
 
@@ -85,3 +86,13 @@ def test_apartment_has_any_bills():
 
     has_bills = manager.has_any_bills('apart-polanka', 2025, 3)
     assert has_bills == False
+
+def test_tenant_not_on_blacklist():
+    manager = Manager(Parameters())
+    manager.add_to_blacklist(first_name="Jan", last_name="Kowalski", reason="Brak zaplaty")
+    assert manager.is_tenant_blacklisted(first_name="Anna", last_name="Nowak") is False
+
+def test_tenant_is_blacklisted():
+    manager = Manager(Parameters())
+    manager.add_to_blacklist(first_name="Jan", last_name="Kowalski", reason="Brak zaplaty")
+    assert manager.is_tenant_blacklisted(first_name="Jan", last_name="Kowalski") is True
